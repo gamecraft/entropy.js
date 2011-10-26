@@ -1,0 +1,10 @@
+{
+    "name": "entropy.js"
+  , "version": "0.0.1"
+  , "private": false
+  , "dependencies": {
+      "express": "2.5.0"
+    , "jade": ">= 0.0.1"
+    , "mongoose": ">= 2.3.7"
+  }
+}

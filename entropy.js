@@ -1,30 +1,24 @@
-var fs = require('fs'),
-    sys = require('sys'),
-    extname = require('path').extname;
-
-// bootstrap 3rd-party libraries
-require.paths.unshift(__dirname+'/support/');
-require.paths.unshift(__dirname+'/support/mongoose/');
-
-// include 3rd-party libraries
-var express = require('express'),
-    mongoose = require('mongoose').Mongoose;
+var fs = require('fs')
+  , sys = require('sys')
+  , extname = require('path').extname
+  , express = require('express')
+  , mongoose = require('mongoose');
 
 // create server
 var app = module.exports.app = express.createServer();
 
 // configure server
-app.use(express.bodyDecoder());
+app.use(express.bodyParser());
 app.use(express.compiler({ enable: true }));
-app.use(express.conditionalGet());
-app.use(express.gzip());
+//app.use(express.conditionalGet());
+//app.use(express.gzip());
 app.use(express.methodOverride());
-app.use(express.staticProvider(__dirname+'/public'));
+app.use(express.static(__dirname + '/public'));
 app.set('views', __dirname+'/views');
 
 // load configuration
 try {
-  var cfg = module.exports.cfg = JSON.parse(fs.readFileSync(__dirname+'/config.json').toString());
+  var cfg = module.exports.cfg = JSON.parse(fs.readFileSync(__dirname + '/config.json').toString());
 } catch(e) {
   throw new Error("File config.json not found. Try: 'cp config.json.sample config.json'");
 }
@@ -80,7 +74,7 @@ app.error(function(err, req, res) {
 });
 
 // open db connection
-var db = module.exports.db = mongoose.connect('mongodb://'+cfg.mongo.host+':'+cfg.mongo.port+'/'+cfg.mongo.name);
+var db = module.exports.db = mongoose.connect('mongodb://' + cfg.mongo.host + ':' + cfg.mongo.port + '/' + cfg.mongo.name);
 
 // load models
 cfg.loader.models.forEach(loader);
