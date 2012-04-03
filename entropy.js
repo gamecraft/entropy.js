@@ -1,5 +1,6 @@
 var fs = require('fs')
-  , sys = require('sys')
+  , sys = require('util')
+  , path = require("path")
   , extname = require('path').extname
   , express = require('express')
   , mongoose = require('mongoose');
@@ -13,28 +14,32 @@ app.use(express.compiler({ enable: true }));
 //app.use(express.conditionalGet());
 //app.use(express.gzip());
 app.use(express.methodOverride());
-app.use(express.static(__dirname + '/public'));
-app.set('views', __dirname+'/views');
+app.use(express.static(process.cwd() + '/public'));
+app.set('views', process.cwd()+'/views');
 
 // load configuration
 try {
-  var cfg = module.exports.cfg = JSON.parse(fs.readFileSync(__dirname + '/config.json').toString());
+  var cfg = module.exports.cfg = JSON.parse(fs.readFileSync(process.cwd() + '/config.json').toString());
 } catch(e) {
   throw new Error("File config.json not found. Try: 'cp config.json.sample config.json'");
 }
 
 // file loader (for controllers, models, ...)
 var loader = function(dir) {
-  fs.readdir(dir, function(err, files) {
-    if (err) {
-      throw err;
-    }
+  path.exists(dir, function(exists){
+    if(exists) {
+      fs.readdir(dir, function(err, files) {
+        if (err) {
+          throw err;
+        }
 
-    files.forEach(function(file) {
-      if (extname(file) == '.js') {
-        require(dir+'/'+file.replace('.js', ''));
-      }
-    });
+        files.forEach(function(file) {
+          if (extname(file) == '.js') {
+            require(process.cwd()+"/"+dir+'/'+file.replace('.js', ''));
+          }
+        });
+      });
+    }
   });
 };
 
